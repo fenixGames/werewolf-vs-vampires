@@ -11,6 +11,7 @@ class Window:
         self.__width: int = width
         self.__height: int = height
         self.__objects: List[GameObject] = []
+        self.__color: pygame.Color = None
 
         pygame.init()
         self.__screen: pygame.Surface = pygame.display.set_mode(self.size)
@@ -32,7 +33,18 @@ class Window:
     def objects(self) -> List[GameObject]:
         return self.__objects
 
+    @property
+    def color(self) -> pygame.Color:
+        return self.__color
+
+    @color.setter
+    def color(self, rgb: pygame.Color):
+        self.__color = rgb
+
     def draw_window(self):
+        if self.color is not None:
+            self.__screen.fill(self.color)
+
         for obj in self.__objects:
             surface = obj.draw()
             if isinstance(surface, pygame.Surface):
