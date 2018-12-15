@@ -12,7 +12,7 @@ window.color = pygame.Color('yellow')
 board_decorator: game_object.GameObject = game_object.GameObject((150, 300), (WIN_WIDTH - 300, WIN_HEIGHT - 300))
 board_decorator.sprite = pathlib.Path('resources/board_decorator.png'), game_object.Size(700, 700)
 
-board = match_three_board.MatchThreeBoard((50, 50), (WIN_WIDTH - 400, WIN_HEIGHT - 400), 10, 10)
+board = match_three_board.MatchThreeBoard((75, 75), (WIN_WIDTH - 450, WIN_HEIGHT - 450), 10, 10)
 board.color = (0, 255, 255)
 board.init_board(55, 55)
 
