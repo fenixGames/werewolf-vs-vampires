@@ -17,7 +17,7 @@ class MatchThreeBoard(GameObject):
 
         self.__columns: int = columns
         self.__rows: int = rows
-        self.__board: List[List[Piece]] = []
+        self.__board: List[List[PieceType]] = []
 
     def init_board(self, tile_width: int, tile_height: int):
         offset = Point(int((self.size.width - tile_width * self.__columns) / 2),
@@ -29,9 +29,9 @@ class MatchThreeBoard(GameObject):
                 piece = GameObject(position.to_tuple(), (tile_width, tile_height))
 
                 is_match = True
-                new_piece = Piece.BLACK
+                new_piece = PieceType.BLACK
                 while is_match:
-                    new_piece = Piece.as_list()[random.randrange(0, 6, 1)]
+                    new_piece = PieceType.as_list()[random.randrange(0, 6, 1)]
                     is_match = self.is_column_combination(column=column, row=row, new_piece=new_piece)
                     is_match = is_match or self.is_row_combination(column=column, row=row, new_piece=new_piece)
 
@@ -54,7 +54,7 @@ class MatchThreeBoard(GameObject):
         return False
 
 
-class Piece(Enum):
+class PieceType(Enum):
     YELLOW = pathlib.Path('resources/yellow.png')
     RED = pathlib.Path('resources/red.png')
     BLUE = pathlib.Path('resources/blue.png')
@@ -65,6 +65,6 @@ class Piece(Enum):
     @staticmethod
     def as_list() -> List:
         list_of_pieces = []
-        for piece in Piece:
+        for piece in PieceType:
             list_of_pieces.append(piece)
         return list_of_pieces
