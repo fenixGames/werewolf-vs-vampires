@@ -17,16 +17,41 @@ class MatchThreeBoard(GameObject):
 
         self.__columns: int = columns
         self.__rows: int = rows
+        self.__board: List[List[Piece]] = []
 
     def init_board(self, tile_width: int, tile_height: int):
         offset = Point(int((self.size.width - tile_width * self.__columns) / 2),
                        int((self.size.height - tile_height * self.__rows) / 2))
         for row in range(0, self.__rows):
+            self.__board.append([])
             for column in range(0, self.__columns):
                 position = Point(row * tile_height, column * tile_width) + offset
                 piece = GameObject(position.to_tuple(), (tile_width, tile_height))
-                piece.sprite = Piece.as_list()[random.randrange(0, 6, 1)].value, Size(tile_width, tile_height)
+
+                is_match = True
+                new_piece = Piece.BLACK
+                while is_match:
+                    new_piece = Piece.as_list()[random.randrange(0, 6, 1)]
+                    is_match = self.is_column_combination(column=column, row=row, new_piece=new_piece)
+                    is_match = is_match or self.is_row_combination(column=column, row=row, new_piece=new_piece)
+
+                piece.sprite = new_piece.value, Size(tile_width, tile_height)
+                self.__board[row].append(new_piece)
                 self.children.append(piece)
+
+    def is_column_combination(self, column, new_piece, row):
+        if column < 2:
+            return False
+        elif self.__board[row][column - 1] == new_piece and self.__board[row][column - 2] == new_piece:
+            return True
+        return False
+
+    def is_row_combination(self, column: int, row: int, new_piece: Enum) -> bool:
+        if row < 2:
+            return False
+        elif self.__board[row - 1][column] == new_piece and self.__board[row - 2][column] == new_piece:
+            return True
+        return False
 
 
 class Piece(Enum):
