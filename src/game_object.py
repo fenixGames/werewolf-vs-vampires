@@ -27,7 +27,7 @@ class Size:
 
 class GameObject:
     def __init__(self, position: Tuple[int, int], size: Tuple[int, int]):
-        self.__position: Point = position
+        self.__position: Point = Point(position[0], position[1])
         self.__outer_rect: Size = Size(size[0], size[1])
 
     @property
