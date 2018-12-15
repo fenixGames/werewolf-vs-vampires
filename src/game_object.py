@@ -47,5 +47,9 @@ class GameObject:
     def outer_rect(self) -> Size:
         return self.__outer_rect
 
+    @property
+    def rectangle(self):
+        return pygame.Rect(self.position.to_tuple(), self.outer_rect.to_tuple())
+
     def draw(self) -> Union[pygame.Surface, pygame.Rect]:
         pass
