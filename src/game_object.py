@@ -29,6 +29,15 @@ class GameObject:
     def __init__(self, position: Tuple[int, int], size: Tuple[int, int]):
         self.__position: Point = Point(position[0], position[1])
         self.__outer_rect: Size = Size(size[0], size[1])
+        self.__color: pygame.Color = None
+
+    @property
+    def color(self) -> pygame.Color:
+        return self.__color
+
+    @color.setter
+    def color(self, color: pygame.Color):
+        self.__color = color
 
     @property
     def position(self) -> Point:

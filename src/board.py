@@ -10,7 +10,6 @@ class Board(GameObject):
     def __init__(self, position: Tuple[int, int], size: Tuple[int, int]):
         super().__init__(position, size)
         self.__background: pygame.Surface = None
-        self.__color: pygame.Color = None
 
     @property
     def background(self) -> pygame.Surface:
@@ -21,14 +20,6 @@ class Board(GameObject):
         if not path_to_image.absolute().is_file():
             raise FileNotFoundError(f'The image for the board {path_to_image.absolute().as_uri()} does not exist')
         self.__background = pygame.image.load(path_to_image.absolute().as_posix()).convert()
-
-    @property
-    def color(self) -> pygame.Color:
-        return self.__color
-
-    @color.setter
-    def color(self, color: pygame.Color):
-        self.__color = color
 
     def draw(self) -> Union[pygame.Surface, pygame.Rect]:
         if self.background is not None:
