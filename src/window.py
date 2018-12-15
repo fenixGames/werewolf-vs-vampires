@@ -3,7 +3,7 @@ from typing import Tuple, List
 
 import pygame
 
-from src.game_object import GameObject
+from src.game_object import GameObject, Point
 
 
 class Window:
@@ -46,11 +46,7 @@ class Window:
             self.__screen.fill(self.color)
 
         for obj in self.__objects:
-            surface = obj.draw()
-            if isinstance(surface, pygame.Surface):
-                self.__screen.blit(surface, obj.position.to_tuple())
-            elif isinstance(surface, pygame.Rect):
-                pygame.draw.rect(self.__screen, obj.color, surface, 1)
+            obj.draw(self.__screen, Point(0, 0))
         pygame.display.flip()
 
     @staticmethod

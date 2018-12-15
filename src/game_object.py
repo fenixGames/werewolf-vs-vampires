@@ -12,6 +12,12 @@ class Point:
     def to_tuple(self) -> Tuple[int, int]:
         return self.x, self.y
 
+    def __add__(self, other):
+        return Point(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other):
+        return Point(self.x - other.x, self.y - other.y)
+
 
 class Size:
     def __init__(self, width: int, height: int):
@@ -77,19 +83,20 @@ class GameObject:
     def sprite(self, path_to_sprite: pathlib.Path):
         if not path_to_sprite.absolute().is_file():
             raise FileNotFoundError(f'Sprite {path_to_sprite.absolute().as_posix()} not found')
-        self.__sprite = pygame.image.load(path_to_sprite.absolute().as_posix()).convert()
+        sprite: pygame.Surface = pygame.image.load(path_to_sprite.absolute().as_posix()).convert()
+        self.__sprite: pygame.Surface = pygame.Surface(self.size.to_tuple())
+        self.__sprite.set_colorkey((255, 255, 255, 255))
+        self.__sprite.blit(sprite, (0, 0))
 
-    def draw(self) -> pygame.Surface:
-        surface: pygame.Surface = pygame.Surface(self.size.to_tuple())
-
+    def draw(self, surface: pygame.Surface, offset: Point):
         border = 1 if self.only_border else 0
+
+        absolute_position = self.position + offset
         if self.sprite is not None:
-            surface.blit(self.sprite, self.position.to_tuple())
+            surface.blit(self.sprite, absolute_position.to_tuple())
         elif self.color is not None:
-            pygame.draw.rect(surface, self.color, pygame.Rect((0, 0), self.size.to_tuple()), border)
+            pygame.draw.rect(surface, self.color, pygame.Rect(absolute_position.to_tuple(), self.size.to_tuple()),
+                             border)
 
         for child in self.children:
-            child_surface = child.draw()
-            if child_surface is not None:
-                surface.blit(child_surface, child.position.to_tuple())
-        return surface
+            child.draw(surface, absolute_position)
