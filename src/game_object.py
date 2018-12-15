@@ -1,4 +1,5 @@
-from typing import Tuple, Union
+import pathlib
+from typing import Tuple, List
 
 import pygame
 
@@ -28,8 +29,11 @@ class Size:
 class GameObject:
     def __init__(self, position: Tuple[int, int], size: Tuple[int, int]):
         self.__position: Point = Point(position[0], position[1])
-        self.__outer_rect: Size = Size(size[0], size[1])
+        self.__size: Size = Size(size[0], size[1])
         self.__color: pygame.Color = None
+        self.__children: List[GameObject] = []
+        self.__only_border: bool = False
+        self.__sprite: pygame.Surface = None
 
     @property
     def color(self) -> pygame.Color:
@@ -44,12 +48,48 @@ class GameObject:
         return self.__position
 
     @property
-    def outer_rect(self) -> Size:
-        return self.__outer_rect
+    def size(self) -> Size:
+        return self.__size
+
+    @property
+    def children(self):
+        return self.__children
 
     @property
     def rectangle(self):
-        return pygame.Rect(self.position.to_tuple(), self.outer_rect.to_tuple())
+        return pygame.Rect(self.position.to_tuple(), self.size.to_tuple())
 
-    def draw(self) -> Union[pygame.Surface, pygame.Rect]:
-        pass
+    @property
+    def only_border(self) -> bool:
+        return self.__only_border
+
+    @only_border.setter
+    def only_border(self, value: bool):
+        if not isinstance(value, bool):
+            raise AttributeError(f'Value is not boolean, {value} ({type(value)})')
+        self.__only_border = value
+
+    @property
+    def sprite(self) -> pygame.Surface:
+        return self.__sprite
+
+    @sprite.setter
+    def sprite(self, path_to_sprite: pathlib.Path):
+        if not path_to_sprite.absolute().is_file():
+            raise FileNotFoundError(f'Sprite {path_to_sprite.absolute().as_posix()} not found')
+        self.__sprite = pygame.image.load(path_to_sprite.absolute().as_posix()).convert()
+
+    def draw(self) -> pygame.Surface:
+        surface: pygame.Surface = pygame.Surface(self.size.to_tuple())
+
+        border = 1 if self.only_border else 0
+        if self.sprite is not None:
+            surface.blit(self.sprite, self.position.to_tuple())
+        elif self.color is not None:
+            pygame.draw.rect(surface, self.color, pygame.Rect((0, 0), self.size.to_tuple()), border)
+
+        for child in self.children:
+            child_surface = child.draw()
+            if child_surface is not None:
+                surface.blit(child_surface, child.position.to_tuple())
+        return surface
