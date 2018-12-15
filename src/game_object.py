@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Union
 
 import pygame
 
@@ -38,5 +38,5 @@ class GameObject:
     def outer_rect(self) -> Size:
         return self.__outer_rect
 
-    def draw(self) -> pygame.Surface:
+    def draw(self) -> Union[pygame.Surface, pygame.Rect]:
         pass

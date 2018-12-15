@@ -1,5 +1,5 @@
 import pathlib
-from typing import Tuple
+from typing import Tuple, Union
 
 import pygame
 
@@ -30,11 +30,9 @@ class Board(GameObject):
     def color(self, color: pygame.Color):
         self.__color = color
 
-    def draw(self) -> pygame.Surface:
+    def draw(self) -> Union[pygame.Surface, pygame.Rect]:
         if self.background is not None:
             return self.background
         if self.color is not None:
-            board: pygame.Surface = pygame.Surface(self.outer_rect.to_tuple())
-            board.fill(self.color, pygame.Rect(self.position.x, self.position.y, self.outer_rect.width - 1,
-                                               self.outer_rect.height - 1))
+            board: pygame.Rect = pygame.Rect(self.position.to_tuple(), self.outer_rect.to_tuple())
             return board
