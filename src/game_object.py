@@ -1,10 +1,15 @@
 from typing import Tuple
 
+import pygame
+
 
 class Point:
     def __init__(self, x: int, y: int):
         self.x: int = x
         self.y: int = y
+
+    def to_tuple(self) -> Tuple[int, int]:
+        return self.x, self.y
 
 
 class Size:
@@ -15,6 +20,9 @@ class Size:
             raise AttributeError("The height of the object cannot be negative")
         self.width: int = width
         self.height: int = height
+
+    def to_tuple(self) -> Tuple[int, int]:
+        return self.width, self.height
 
 
 class GameObject:
@@ -30,5 +38,5 @@ class GameObject:
     def outer_rect(self) -> Size:
         return self.__outer_rect
 
-    def draw(self):
+    def draw(self) -> pygame.Surface:
         pass
