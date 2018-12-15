@@ -10,7 +10,7 @@ class Board(GameObject):
     def __init__(self, position: Tuple[int, int], size: Tuple[int, int]):
         super().__init__(position, size)
         self.__background: pygame.Surface = None
-        self.__color: Tuple[int, int, int] = None
+        self.__color: pygame.Color = None
 
     @property
     def background(self) -> pygame.Surface:
@@ -23,19 +23,12 @@ class Board(GameObject):
         self.__background = pygame.image.load(path_to_image.absolute().as_posix()).convert()
 
     @property
-    def color(self) -> Tuple[int, int, int]:
+    def color(self) -> pygame.Color:
         return self.__color
 
     @color.setter
-    def color(self, rgb: Tuple[int, int, int]):
-        red, green, blue = rgb
-        if red < 0 or red > 255:
-            raise AttributeError(f'Invalid RGB color ({red}, {green}, {blue})')
-        if green < 0 or green > 255:
-            raise AttributeError(f'Invalid RGB color ({red}, {green}, {blue})')
-        if blue < 0 or blue > 255:
-            raise AttributeError(f'Invalid RGB color ({red}, {green}, {blue})')
-        self.__color = red, green, blue
+    def color(self, color: pygame.Color):
+        self.__color = color
 
     def draw(self) -> pygame.Surface:
         if self.background is not None:
