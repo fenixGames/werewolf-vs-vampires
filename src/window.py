@@ -37,6 +37,8 @@ class Window:
             surface = obj.draw()
             if isinstance(surface, pygame.Surface):
                 self.__screen.blit(surface, obj.position.to_tuple())
+            elif isinstance(surface, pygame.Rect):
+                pygame.draw.rect(self.__screen, obj.color, surface, 1)
         pygame.display.flip()
 
     @staticmethod
