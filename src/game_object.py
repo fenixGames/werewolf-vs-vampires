@@ -32,6 +32,37 @@ class Size:
         return self.width, self.height
 
 
+class Sprite:
+    def __init__(self, path_to_file: pathlib.Path, size: Size):
+        if not path_to_file.absolute().is_file():
+            raise FileNotFoundError(f'The file for the sprite {path_to_file.absolute().as_posix()} does not exist')
+
+        self.__sprite: pygame.Surface = pygame.image.load(path_to_file.absolute().as_posix()).convert()
+        self.__alpha_color: pygame.Color = (255, 255, 255, 255)
+        self.__size: Size = size
+
+    @property
+    def alpha_color(self) -> pygame.Color:
+        return self.__alpha_color
+
+    @alpha_color.setter
+    def alpha_color(self, value: pygame.Color):
+        self.__alpha_color = value
+
+    def draw(self, surface: pygame.Surface, offset: Point):
+        container = pygame.Surface(self.__size.to_tuple())
+        container.set_colorkey(self.__alpha_color)
+        container.fill(self.__alpha_color)
+
+        x_offset = int((container.get_width() - self.__sprite.get_width()) / 2)
+        y_offset = int((container.get_height() - self.__sprite.get_height()) / 2)
+
+        position = Point(x_offset, y_offset) + offset
+        container.blit(self.__sprite, (x_offset, y_offset))
+
+        surface.blit(container, position.to_tuple())
+
+
 class GameObject:
     def __init__(self, position: Tuple[int, int], size: Tuple[int, int]):
         self.__position: Point = Point(position[0], position[1])
@@ -39,7 +70,7 @@ class GameObject:
         self.__color: pygame.Color = None
         self.__children: List[GameObject] = []
         self.__only_border: bool = False
-        self.__sprite: pygame.Surface = None
+        self.__sprite: Sprite = None
 
     @property
     def color(self) -> pygame.Color:
@@ -76,24 +107,19 @@ class GameObject:
         self.__only_border = value
 
     @property
-    def sprite(self) -> pygame.Surface:
+    def sprite(self) -> Sprite:
         return self.__sprite
 
     @sprite.setter
-    def sprite(self, path_to_sprite: pathlib.Path):
-        if not path_to_sprite.absolute().is_file():
-            raise FileNotFoundError(f'Sprite {path_to_sprite.absolute().as_posix()} not found')
-        sprite: pygame.Surface = pygame.image.load(path_to_sprite.absolute().as_posix()).convert()
-        self.__sprite: pygame.Surface = pygame.Surface(self.size.to_tuple())
-        self.__sprite.set_colorkey((255, 255, 255, 255))
-        self.__sprite.blit(sprite, (0, 0))
+    def sprite(self, value: Tuple[pathlib.Path, Size]):
+        self.__sprite = Sprite(value[0], value[1])
 
     def draw(self, surface: pygame.Surface, offset: Point):
         border = 1 if self.only_border else 0
 
         absolute_position = self.position + offset
         if self.sprite is not None:
-            surface.blit(self.sprite, absolute_position.to_tuple())
+            self.sprite.draw(surface, absolute_position)
         elif self.color is not None:
             pygame.draw.rect(surface, self.color, pygame.Rect(absolute_position.to_tuple(), self.size.to_tuple()),
                              border)
