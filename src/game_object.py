@@ -3,64 +3,8 @@ from typing import Tuple, List
 
 import pygame
 
-
-class Point:
-    def __init__(self, x: int, y: int):
-        self.x: int = x
-        self.y: int = y
-
-    def to_tuple(self) -> Tuple[int, int]:
-        return self.x, self.y
-
-    def __add__(self, other):
-        return Point(self.x + other.x, self.y + other.y)
-
-    def __sub__(self, other):
-        return Point(self.x - other.x, self.y - other.y)
-
-
-class Size:
-    def __init__(self, width: int, height: int):
-        if width < 0:
-            raise AttributeError("The width of an object cannot be negative")
-        if height < 0:
-            raise AttributeError("The height of the object cannot be negative")
-        self.width: int = width
-        self.height: int = height
-
-    def to_tuple(self) -> Tuple[int, int]:
-        return self.width, self.height
-
-
-class Sprite:
-    def __init__(self, path_to_file: pathlib.Path, size: Size):
-        if not path_to_file.absolute().is_file():
-            raise FileNotFoundError(f'The file for the sprite {path_to_file.absolute().as_posix()} does not exist')
-
-        self.__sprite: pygame.Surface = pygame.image.load(path_to_file.absolute().as_posix()).convert()
-        self.__alpha_color: pygame.Color = (255, 255, 255, 255)
-        self.__size: Size = size
-
-    @property
-    def alpha_color(self) -> pygame.Color:
-        return self.__alpha_color
-
-    @alpha_color.setter
-    def alpha_color(self, value: pygame.Color):
-        self.__alpha_color = value
-
-    def draw(self, surface: pygame.Surface, offset: Point):
-        container = pygame.Surface(self.__size.to_tuple())
-        container.set_colorkey(self.__alpha_color)
-        container.fill(self.__alpha_color)
-
-        x_offset = int((container.get_width() - self.__sprite.get_width()) / 2)
-        y_offset = int((container.get_height() - self.__sprite.get_height()) / 2)
-
-        position = Point(x_offset, y_offset) + offset
-        container.blit(self.__sprite, (x_offset, y_offset))
-
-        surface.blit(container, position.to_tuple())
+from src.graphics import Sprite
+from src.vector import Point, Size
 
 
 class GameObject:

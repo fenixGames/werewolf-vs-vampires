@@ -3,7 +3,8 @@ import random
 from enum import Enum
 from typing import Tuple, List
 
-from src.game_object import GameObject, Point, Size
+from src.game_object import GameObject
+from src.vector import Point, Size
 
 
 class MatchThreeBoard(GameObject):

@@ -3,7 +3,8 @@ from typing import Tuple, List
 
 import pygame
 
-from src.game_object import GameObject, Point
+from src.game_object import GameObject
+from src.vector import Point
 
 
 class Window:
