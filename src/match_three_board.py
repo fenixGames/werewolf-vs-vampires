@@ -1,7 +1,7 @@
 import pathlib
 import random
 from enum import Enum
-from typing import Tuple, List
+from typing import Tuple, List, Union
 
 from src.game_object import GameObject
 from src.graphics import GraphicResource
@@ -54,6 +54,12 @@ class MatchThreeBoard(GameObject):
         elif self.__board[row - 1][column] == new_piece and self.__board[row - 2][column] == new_piece:
             return True
         return False
+
+    def child_in_position(self, position: Point) -> Union[GameObject, None]:
+        for child in self.children:
+            if child.position == position:
+                return child
+        return None
 
 
 class PieceType(Enum):
