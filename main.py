@@ -3,7 +3,8 @@ import pathlib
 import pygame
 
 import lib.vector
-from lib import events, game_object, graphics, window
+import src
+from lib import events, game_object, graphics, window, vector
 from src import board
 
 WIN_WIDTH = 700
@@ -23,6 +24,7 @@ board_decorator.children.append(board)
 window.objects.append(board_decorator)
 event_handler = events.EventHandler()
 event_handler.events.append(events.ExitEvent())
+event_handler.events.append(src.events.MouseButtonDownEvent(board, vector.Point(0, 300)))
 while True:
     event_handler.check_events(pygame.event.get())
     window.draw_window()

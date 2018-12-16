@@ -13,6 +13,10 @@ class Event:
     def type(self) -> pygame.event.EventType:
         return self.__type
 
+    @property
+    def args(self):
+        return self.__args
+
     def handle(self, event: pygame.event.Event):
         pass
 
