@@ -5,6 +5,19 @@ from lib.vector import Point, Size
 from src.board import MatchThreeBoard, Piece
 
 
+def exchange_squares(chosen_square: Piece, selected_square: Piece, draw_function: Callable):
+    delta_point: Point = chosen_square.position - selected_square.position
+    delta_point.x /= 10
+    delta_point.y /= 10
+
+    final_position = selected_square.position
+    while chosen_square.position != final_position:
+        chosen_square.position -= delta_point
+        selected_square.position += delta_point
+
+        draw_function()
+
+
 class MouseButtonDownEvent(Event):
     def __init__(self, board: MatchThreeBoard, offset: Point):
         super().__init__(pygame.MOUSEBUTTONDOWN, (board, offset))
@@ -37,9 +50,10 @@ class MouseButtonDownEvent(Event):
                 chosen_square = square
 
         if selected_square is not None:
-            chosen_square_type = chosen_square.type
-            chosen_square.type = selected_square.type
-            selected_square.type = chosen_square_type
             selected_square.selected = False
+
+            if self.draw_function is not None:
+                exchange_squares(chosen_square, selected_square, self.draw_function)
+            board.check_matches()
         elif chosen_square is not None:
             chosen_square.selected = not chosen_square.selected

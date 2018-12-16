@@ -27,6 +27,10 @@ class GameObject:
     def position(self) -> Point:
         return self.__position
 
+    @position.setter
+    def position(self, value: Point):
+        self.__position = value
+
     @property
     def size(self) -> Size:
         return self.__size
