@@ -93,6 +93,15 @@ class MatchThreeBoard(GameObject):
                 self.__board[row].append(new_piece)
                 self.children.append(piece)
 
+    def check_matches(self, swap1: Piece, swap2: Piece) -> bool:
+        x_delta = self.children[0].size.width
+        y_delta = self.children[0].size.height
+        match_list: List[Piece] = []
+
+        column_matches = self.get_matches_on_column(swap1)
+        column_matches += self.get_matches_on_column(swap2)
+        return True
+
     def is_column_combination(self, column, new_piece, row):
         if column < 2:
             return False
