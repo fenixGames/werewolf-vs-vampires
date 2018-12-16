@@ -1,9 +1,8 @@
-import pathlib
-from typing import Tuple, List
+from typing import Tuple, List, Union
 
 import pygame
 
-from src.graphics import Sprite
+from src.graphics import Sprite, GraphicResource
 from src.vector import Point, Size
 
 
@@ -55,8 +54,11 @@ class GameObject:
         return self.__sprite
 
     @sprite.setter
-    def sprite(self, value: Tuple[pathlib.Path, Size]):
-        self.__sprite = Sprite(value[0], value[1])
+    def sprite(self, value: Union[Tuple[GraphicResource, Size], GraphicResource]):
+        if isinstance(value, GraphicResource):
+            self.__sprite = Sprite(value)
+        else:
+            self.__sprite = Sprite(value[0], value[1])
 
     def draw(self, surface: pygame.Surface, offset: Point):
         border = 1 if self.only_border else 0

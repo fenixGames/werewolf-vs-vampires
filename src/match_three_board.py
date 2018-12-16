@@ -4,6 +4,7 @@ from enum import Enum
 from typing import Tuple, List
 
 from src.game_object import GameObject
+from src.graphics import GraphicResource
 from src.vector import Point, Size
 
 
@@ -36,7 +37,7 @@ class MatchThreeBoard(GameObject):
                     is_match = self.is_column_combination(column=column, row=row, new_piece=new_piece)
                     is_match = is_match or self.is_row_combination(column=column, row=row, new_piece=new_piece)
 
-                piece.sprite = new_piece.value, Size(tile_width, tile_height)
+                piece.sprite = GraphicResource(new_piece.value, Size(tile_width, tile_height))
                 self.__board[row].append(new_piece)
                 self.children.append(piece)
 
