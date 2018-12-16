@@ -28,7 +28,7 @@ class GraphicResource:
 
     @property
     def size(self) -> Size:
-        return self.size
+        return self.__size
 
     @property
     def drawable_surface(self) -> pygame.Surface:
@@ -65,6 +65,6 @@ class Sprite:
         y_offset = int((container.get_height() - self.__sprite.size.width) / 2)
 
         position = Point(x_offset, y_offset) + offset
-        container.blit(self.__sprite, (x_offset, y_offset))
+        container.blit(self.__sprite.drawable_surface, (x_offset, y_offset))
 
         surface.blit(container, position.to_tuple())
