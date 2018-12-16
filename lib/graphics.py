@@ -32,10 +32,14 @@ class GraphicResource:
 
     @property
     def drawable_surface(self) -> pygame.Surface:
-        return self.__graphic
+        container: pygame.Surface = pygame.Surface(self.size.to_tuple())
+        container.set_colorkey(self.alpha_color)
+        container.fill(self.alpha_color)
+        container.blit(self.__graphic, (0, 0))
+        return container
 
     def overlap_resource(self, resource: __init__):
-        self.__graphic.blit(resource, (0, 0))
+        self.__graphic.blit(resource.drawable_surface, (0, 0))
 
 
 class Sprite:
