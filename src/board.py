@@ -15,6 +15,7 @@ class PieceType(Enum):
     PURPLE = pathlib.Path('resources/purple.png')
     GREEN = pathlib.Path('resources/green.png')
     BLACK = pathlib.Path('resources/black.png')
+    EMPTY = pathlib.Path('resources/empty.png')
 
     @staticmethod
     def as_list() -> List:
@@ -105,3 +106,42 @@ class MatchThreeBoard(GameObject):
         elif self.__board[row - 1][column] == new_piece and self.__board[row - 2][column] == new_piece:
             return True
         return False
+
+    def reset_tiles(self):
+        for child in self.children:
+            child.selected = False
+
+    def get_children_in_position(self, position: Point) -> Piece:
+        for child in self.children:
+            if child.in_position(position):
+                return child
+
+    def get_matches_on_column(self, piece: Piece) -> List[Piece]:
+        index = self.children.index(piece)
+        piece_type = self.children[index].type
+
+        column_matches: List[Piece] = []
+
+        # Check left
+        idx = index - 1
+        while idx >= 0 and self.children[idx].type == piece_type:
+            column_matches.append(self.children[idx])
+            idx -= 1
+
+        # Check right
+        idx = index + 1
+        while idx % self.__rows <= self.__columns and self.children[idx].type == piece_type:
+            column_matches.append(self.children[idx])
+            idx += 1
+
+        if len(column_matches) > 1:
+            column_matches.append(piece)
+            return column_matches
+        return []
+
+    def swap_children(self, swap1: Piece, swap2: Piece):
+        idx1 = self.children.index(swap1)
+        idx2 = self.children.index(swap2)
+
+        self.children[idx1], self.children[idx2] = self.children[idx2], self.children[idx1]
+        return None
