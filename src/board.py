@@ -105,25 +105,3 @@ class MatchThreeBoard(GameObject):
         elif self.__board[row - 1][column] == new_piece and self.__board[row - 2][column] == new_piece:
             return True
         return False
-
-    def child_in_position(self, position: Point) -> Union[GameObject, None]:
-        for child in self.children:
-            if child.position == position:
-                return child
-        return None
-
-
-class PieceType(Enum):
-    YELLOW = pathlib.Path('resources/yellow.png')
-    RED = pathlib.Path('resources/red.png')
-    BLUE = pathlib.Path('resources/blue.png')
-    PURPLE = pathlib.Path('resources/purple.png')
-    GREEN = pathlib.Path('resources/green.png')
-    BLACK = pathlib.Path('resources/black.png')
-
-    @staticmethod
-    def as_list() -> List:
-        list_of_pieces = []
-        for piece in PieceType:
-            list_of_pieces.append(piece)
-        return list_of_pieces
