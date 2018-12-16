@@ -60,6 +60,17 @@ class GameObject:
         else:
             self.__sprite = Sprite(value[0], value[1])
 
+    def in_position(self, position: Point):
+        if position.x < self.position.x:
+            return False
+        if position.x > self.position.x + self.size.width:
+            return False
+        if position.y < self.position.y:
+            return False
+        if position.y > self.position.y + self.size.height:
+            return False
+        return True
+
     def draw(self, surface: pygame.Surface, offset: Point):
         border = 1 if self.only_border else 0
 
