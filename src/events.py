@@ -10,6 +10,8 @@ class MouseButtonDownEvent(Event):
         super().__init__(pygame.MOUSEBUTTONDOWN, (board, offset))
 
     def handle(self, event: pygame.event.Event):
+        if event.button != 1:
+            return
         board, offset = self.args
 
         tile_size: Size = board.children[0].size
