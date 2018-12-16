@@ -3,7 +3,7 @@ import pathlib
 import pygame
 
 import src.vector
-from src import window, game_object, match_three_board, graphics
+from src import window, game_object, match_three_board, graphics, events
 
 WIN_WIDTH = 1000
 WIN_HEIGHT = 1000
@@ -20,6 +20,8 @@ board.init_board(55, 55)
 
 board_decorator.children.append(board)
 window.objects.append(board_decorator)
+event_handler = events.EventHandler()
+event_handler.events.append(events.ExitEvent())
 while True:
-    window.process_events()
+    event_handler.check_events(pygame.event.get())
     window.draw_window()

@@ -1,4 +1,3 @@
-import sys
 from typing import Tuple, List
 
 import pygame
@@ -49,9 +48,3 @@ class Window:
         for obj in self.__objects:
             obj.draw(self.__screen, Point(0, 0))
         pygame.display.flip()
-
-    @staticmethod
-    def process_events():
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                sys.exit()
