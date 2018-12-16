@@ -22,9 +22,12 @@ board.init_board(55, 55)
 
 board_decorator.children.append(board)
 window.objects.append(board_decorator)
+
 event_handler = events.EventHandler()
 event_handler.events.append(events.ExitEvent())
-event_handler.events.append(src.events.MouseButtonDownEvent(board, vector.Point(0, 300)))
+click_event = src.events.MouseButtonDownEvent(board, vector.Point(0, 300))
+click_event.draw_function = window.draw_window
+event_handler.events.append(click_event)
 while True:
     event_handler.check_events(pygame.event.get())
     window.draw_window()

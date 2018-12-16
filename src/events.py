@@ -1,3 +1,5 @@
+from typing import Callable
+
 import pygame
 
 from lib.events import Event
