@@ -2,8 +2,8 @@ from typing import Tuple, List
 
 import pygame
 
-from src.game_object import GameObject
-from src.vector import Point
+from lib.game_object import GameObject
+from lib.vector import Point
 
 
 class Window:

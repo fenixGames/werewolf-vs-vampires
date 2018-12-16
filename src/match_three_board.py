@@ -3,9 +3,9 @@ import random
 from enum import Enum
 from typing import Tuple, List, Union
 
-from src.game_object import GameObject
-from src.graphics import GraphicResource
-from src.vector import Point, Size
+from lib.game_object import GameObject
+from lib.graphics import GraphicResource
+from lib.vector import Point, Size
 
 
 class MatchThreeBoard(GameObject):

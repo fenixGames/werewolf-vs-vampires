@@ -2,7 +2,7 @@ import pathlib
 
 import pygame
 
-from src.vector import Size, Point
+from lib.vector import Size, Point
 
 
 class GraphicResource:

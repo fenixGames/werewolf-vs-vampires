@@ -2,7 +2,7 @@ from typing import Tuple, List
 
 import pygame
 
-from src.game_object import GameObject
+from lib.game_object import GameObject
 
 
 class Board(GameObject):

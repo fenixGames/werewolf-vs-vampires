@@ -2,8 +2,8 @@ from typing import Tuple, List, Union
 
 import pygame
 
-from src.graphics import Sprite, GraphicResource
-from src.vector import Point, Size
+from lib.graphics import Sprite, GraphicResource
+from lib.vector import Point, Size
 
 
 class GameObject:
