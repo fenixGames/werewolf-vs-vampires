@@ -129,22 +129,25 @@ class MatchThreeBoard(GameObject):
                 return child
 
     def get_matches_on_column(self, piece: Piece) -> List[Piece]:
-        index = self.children.index(piece)
-        piece_type = self.children[index].type
+        index: int = self.children.index(piece)
+        piece_type: PieceType = self.children[index].type
+
+        active_column = int(index % self.__columns)
 
         column_matches: List[Piece] = []
 
-        # Check left
-        idx = index - 1
-        while idx >= 0 and self.children[idx].type == piece_type:
+        # Check up
+        idx = index - self.__columns
+        while idx % self.__columns == active_column and idx >= 0 and self.children[idx].type == piece_type:
             column_matches.append(self.children[idx])
-            idx -= 1
+            idx -= self.__columns
 
-        # Check right
-        idx = index + 1
-        while idx % self.__rows <= self.__columns and self.children[idx].type == piece_type:
+        # Check down
+        idx = index + self.__columns
+        while idx % self.__columns == active_column and idx <= len(self.children) and \
+                self.children[idx].type == piece_type:
             column_matches.append(self.children[idx])
-            idx += 1
+            idx += self.__columns
 
         if len(column_matches) > 1:
             column_matches.append(piece)
