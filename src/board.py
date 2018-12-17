@@ -1,4 +1,3 @@
-import random
 from typing import Tuple, List
 
 import src
@@ -114,7 +113,7 @@ def create_board(position: Point, size: Size, columns: int, rows: int, tile_size
             is_match = True
             new_piece = PieceType.BLACK
             while is_match:
-                new_piece = PieceType.as_list()[random.randrange(0, 6, 1)]
+                new_piece = PieceType.get_random_piece()
                 is_match = src.piece.is_column_combination(board=type_board, column=index, row=row, new_piece=new_piece)
                 is_match = is_match or src.piece.is_row_combination(board=type_board, column=index, row=row,
                                                                     new_piece=new_piece)

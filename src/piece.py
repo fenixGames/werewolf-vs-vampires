@@ -1,4 +1,5 @@
 import pathlib
+import random
 from enum import Enum
 from typing import Tuple, List
 
@@ -21,6 +22,10 @@ class PieceType(Enum):
         for piece in PieceType:
             list_of_pieces.append(piece)
         return list_of_pieces
+
+    @staticmethod
+    def get_random_piece():
+        return PieceType.as_list()[random.randrange(0, 6, 1)]
 
 
 def is_column_combination(board: List[List[PieceType]], column: int, row: int, new_piece: PieceType) -> bool:
