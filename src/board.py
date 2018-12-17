@@ -1,62 +1,12 @@
-import pathlib
 import random
-from enum import Enum
 from typing import Tuple, List
 
+import src
 from lib.game_object import GameObject
 from lib.graphics import GraphicResource
 from lib.vector import Point, Size
-
-
-class PieceType(Enum):
-    YELLOW = pathlib.Path('resources/yellow.png')
-    RED = pathlib.Path('resources/red.png')
-    BLUE = pathlib.Path('resources/blue.png')
-    PURPLE = pathlib.Path('resources/purple.png')
-    GREEN = pathlib.Path('resources/green.png')
-    BLACK = pathlib.Path('resources/black.png')
-    EMPTY = pathlib.Path('resources/empty.png')
-
-    @staticmethod
-    def as_list() -> List:
-        list_of_pieces = []
-        for piece in PieceType:
-            list_of_pieces.append(piece)
-        return list_of_pieces
-
-
-class Piece(GameObject):
-    def __init__(self, position: Tuple[int, int], size: Tuple[int, int]):
-        super().__init__(position, size)
-        self.__selected: bool = False
-        self.__type: PieceType = None
-
-    @property
-    def selected(self) -> bool:
-        return self.__selected
-
-    @selected.setter
-    def selected(self, value: bool):
-        self.__selected = value
-
-        self.reload_sprite()
-
-    def reload_sprite(self):
-        if not self.selected:
-            self.sprite = GraphicResource(self.type.value)
-        else:
-            sprite = GraphicResource(self.type.value)
-            sprite.overlap_resource(GraphicResource(pathlib.Path('resources/selection.png')))
-            self.sprite = sprite
-
-    @property
-    def type(self) -> PieceType:
-        return self.__type
-
-    @type.setter
-    def type(self, value: PieceType):
-        self.__type = value
-        self.reload_sprite()
+from src.column import Column
+from src.piece import Piece, PieceType
 
 
 class MatchThreeBoard(GameObject):
