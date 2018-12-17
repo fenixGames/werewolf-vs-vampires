@@ -39,6 +39,8 @@ class MouseButtonDownEvent(Event):
         prev_square = board.get_children_in_position(self.__previous)
         current_square = board.get_children_in_position(position)
 
+        if current_square is None:
+            return
         if not board.are_neighbours(prev_square, current_square):
             board.reset_tiles()
             current_square.selected = True
