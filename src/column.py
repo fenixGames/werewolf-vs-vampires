@@ -18,11 +18,11 @@ class Column(GameObject):
         swapped_pieces: List[Tuple[Piece, Piece]] = []
         while index > 0:
             piece = self.children[index]
-            piece_above = self.children[index - len(self.children)]
+            piece_above = self.children[index - 1]
 
             if piece.type == piece_type and piece_above.type != piece_type:
                 swapped_pieces.append((piece, piece_above))
-            index -= len(self.children)
+            index -= 1
         return swapped_pieces
 
     def get_matches(self, piece: Piece, row: int) -> List[Piece]:
