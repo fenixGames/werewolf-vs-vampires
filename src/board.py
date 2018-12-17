@@ -101,6 +101,9 @@ class MatchThreeBoard(GameObject):
 
         column_matches = self.get_matches_on_column(swap1)
         column_matches += self.get_matches_on_column(swap2)
+
+        row_matches = self.get_matches_on_row(swap1)
+        row_matches += self.get_matches_on_row(swap2)
         return True
 
     @staticmethod
@@ -160,3 +163,28 @@ class MatchThreeBoard(GameObject):
 
         self.children[idx1], self.children[idx2] = self.children[idx2], self.children[idx1]
         return None
+
+    def get_matches_on_row(self, piece: Piece) -> List[Piece]:
+        index: int = self.children.index(piece)
+        piece_type: PieceType = self.children[index].type
+
+        row_matches: List[Piece] = []
+
+        active_row = int(index / self.__columns)
+
+        # Check left
+        idx = index - 1
+        while idx >= active_row * self.__columns and self.children[idx].type == piece_type:
+            row_matches.append(self.children[idx])
+            idx -= 1
+
+        # CHeck right
+        idx = index + 1
+        while idx < (active_row + 1) * self.__columns and self.children[idx].type == piece_type:
+            row_matches.append(self.children[idx])
+            idx += 1
+
+        if len(row_matches) > 1:
+            row_matches.append(piece)
+            return row_matches
+        return []
