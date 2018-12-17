@@ -94,17 +94,11 @@ class MatchThreeBoard(GameObject):
                 board[row].append(new_piece)
                 self.children.append(piece)
 
-    def check_matches(self, swap1: Piece, swap2: Piece) -> bool:
-        x_delta = self.children[0].size.width
-        y_delta = self.children[0].size.height
-        match_list: List[Piece] = []
+    def get_match_list(self, piece: Piece) -> List[Piece]:
+        column_matches = self.get_matches_on_column(piece)
+        row_matches = self.get_matches_on_row(piece)
 
-        column_matches = self.get_matches_on_column(swap1)
-        column_matches += self.get_matches_on_column(swap2)
-
-        row_matches = self.get_matches_on_row(swap1)
-        row_matches += self.get_matches_on_row(swap2)
-        return True
+        return column_matches + row_matches
 
     @staticmethod
     def is_column_combination(board: List[List[PieceType]], column: int, row: int, new_piece: PieceType) -> bool:
@@ -188,3 +182,6 @@ class MatchThreeBoard(GameObject):
             row_matches.append(piece)
             return row_matches
         return []
+
+    def fill_board(self):
+        pass

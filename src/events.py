@@ -1,10 +1,11 @@
-from typing import Callable
+import time
+from typing import Callable, Tuple
 
 import pygame
 
 from lib.events import Event
 from lib.vector import Point
-from src.board import MatchThreeBoard, Piece
+from src.board import MatchThreeBoard, Piece, PieceType
 
 
 def exchange_squares(chosen_square: Piece, selected_square: Piece, draw_function: Callable):
@@ -42,7 +43,25 @@ class MouseButtonDownEvent(Event):
 
                 board.swap_children(prev_square, current_square)
             board.reset_tiles()
-            board.check_matches(prev_square, current_square)
+            self.handle_matches((prev_square, current_square))
         elif current_square is not None:
             current_square.selected = not current_square.selected
         self.__previous = position
+
+    def handle_matches(self, pieces: Tuple[Piece, Piece]):
+        board: MatchThreeBoard = None
+        board, _ = self.args
+        for piece in pieces:
+            matches = board.get_match_list(piece)
+
+            for match in matches:
+                match.selected = True
+            self.draw_function()
+
+            time.sleep(0.2)
+            for match in matches:
+                match.type = PieceType.EMPTY
+                match.selected = False
+            self.draw_function()
+
+        board.fill_board()
