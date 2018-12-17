@@ -16,7 +16,7 @@ board_decorator: game_object.GameObject = game_object.GameObject((0, 300), (WIN_
 board_decorator.sprite = graphics.GraphicResource(pathlib.Path('resources/board_decorator.png'),
                                                   lib.vector.Size(700, 700)), lib.vector.Size(700, 700)
 
-board = board.MatchThreeBoard((75, 75), (WIN_WIDTH - 150, WIN_HEIGHT - 450), 10, 10)
+board = board.MatchThreeBoard((75, 75), (WIN_WIDTH - 150, WIN_HEIGHT - 450), columns=4, rows=5)
 # board.color = (0, 255, 255)
 board.init_board(55, 55)
 
