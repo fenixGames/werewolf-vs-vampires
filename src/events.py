@@ -5,7 +5,8 @@ import pygame
 
 from lib.events import Event
 from lib.vector import Point
-from src.board import MatchThreeBoard, Piece, PieceType
+from src.board import MatchThreeBoard
+from src.piece import Piece, PieceType
 
 
 def exchange_squares(chosen_square: Piece, selected_square: Piece, draw_function: Callable):
@@ -33,24 +34,30 @@ class MouseButtonDownEvent(Event):
             return
         board, offset = self.args
 
-        position = Point(event.pos[0], event.pos[1]) - offset - board.position
+        position = Point(event.pos[0], event.pos[1]) - offset
 
         prev_square = board.get_children_in_position(self.__previous)
         current_square = board.get_children_in_position(position)
-        if prev_square is not None and prev_square.selected:
+
+        if not board.are_neighbours(prev_square, current_square):
+            board.reset_tiles()
+            current_square.selected = True
+        elif prev_square is not None and current_square is not None and prev_square == current_square:
+            current_square.selected = not current_square.selected
+        elif prev_square is not None and prev_square.selected:
             if self.draw_function is not None:
                 exchange_squares(prev_square, current_square, self.draw_function)
 
                 board.swap_children(prev_square, current_square)
             board.reset_tiles()
             self.handle_matches((prev_square, current_square))
-        elif current_square is not None:
-            current_square.selected = not current_square.selected
+            pass
         self.__previous = position
 
     def handle_matches(self, pieces: Tuple[Piece, Piece]):
         board: MatchThreeBoard = None
         board, _ = self.args
+
         for piece in pieces:
             matches = board.get_match_list(piece)
 
@@ -64,4 +71,12 @@ class MouseButtonDownEvent(Event):
                 match.selected = False
             self.draw_function()
 
-        board.fill_board()
+            swapped_pieces = board.get_swaps_by_type(PieceType.EMPTY)
+            while swapped_pieces:
+                for piece1, piece2 in swapped_pieces:
+                    exchange_squares(piece1, piece2, self.draw_function)
+                    board.swap_children(piece1, piece2)
+                swapped_pieces = board.get_swaps_by_type(PieceType.EMPTY)
+
+            # for piece1, piece2 in swapped_pieces:
+            #     self.handle_matches((piece1, piece2))

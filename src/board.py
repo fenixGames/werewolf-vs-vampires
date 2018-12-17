@@ -10,122 +10,42 @@ from src.piece import Piece, PieceType
 
 
 class MatchThreeBoard(GameObject):
-    def __init__(self, position: Tuple[int, int], size: Tuple[int, int], columns: int, rows: int):
+    def __init__(self, position: Tuple[int, int], size: Tuple[int, int]):
         super().__init__(position, size)
 
-        if columns < 0:
-            raise AttributeError('The number of columns cannot be negative')
-        if rows < 0:
-            raise AttributeError('The number of rows cannot be negative')
-
-        self.__columns: int = columns
-        self.__rows: int = rows
-
-    def init_board(self, tile_width: int, tile_height: int):
-        offset = Point(int((self.size.width - tile_width * self.__columns) / 2),
-                       int((self.size.height - tile_height * self.__rows) / 2))
-        board: List[List[PieceType]] = []
-        for row in range(0, self.__rows):
-            board.append([])
-            for column in range(0, self.__columns):
-                position = Point(column * tile_height, row * tile_width) + offset
-                piece = Piece(position.to_tuple(), (tile_width, tile_height))
-
-                is_match = True
-                new_piece = PieceType.BLACK
-                while is_match:
-                    new_piece = PieceType.as_list()[random.randrange(0, 6, 1)]
-                    is_match = self.is_column_combination(board=board, column=column, row=row, new_piece=new_piece)
-                    is_match = is_match or self.is_row_combination(board=board, column=column, row=row,
-                                                                   new_piece=new_piece)
-
-                piece.sprite = GraphicResource(new_piece.value, Size(tile_width, tile_height))
-                piece.type = new_piece
-                board[row].append(new_piece)
-                self.children.append(piece)
-
     def get_match_list(self, piece: Piece) -> List[Piece]:
-        column_matches = self.get_matches_on_column(piece)
-        row_matches = self.get_matches_on_row(piece)
+        row, column = self.get_position_of_piece(piece)
+        column_matches = self.children[column].get_matches(piece=piece, row=row)
+        row_matches = self.get_matches_on_row(piece=piece, row=row, column=column)
 
         return column_matches + row_matches
 
-    @staticmethod
-    def is_column_combination(board: List[List[PieceType]], column: int, row: int, new_piece: PieceType) -> bool:
-        if column < 2:
-            return False
-        elif board[row][column - 1] == new_piece and board[row][column - 2] == new_piece:
-            return True
-        return False
-
-    @staticmethod
-    def is_row_combination(board: List[List[PieceType]], column: int, row: int, new_piece: Enum) -> bool:
-        if row < 2:
-            return False
-        elif board[row - 1][column] == new_piece and board[row - 2][column] == new_piece:
-            return True
-        return False
-
     def reset_tiles(self):
         for child in self.children:
-            child.selected = False
-
-    def get_children_in_position(self, position: Point) -> Piece:
-        for child in self.children:
-            if child.in_position(position):
-                return child
-
-    def get_matches_on_column(self, piece: Piece) -> List[Piece]:
-        index: int = self.children.index(piece)
-        piece_type: PieceType = self.children[index].type
-
-        active_column = int(index % self.__columns)
-
-        column_matches: List[Piece] = []
-
-        # Check up
-        idx = index - self.__columns
-        while idx % self.__columns == active_column and idx >= 0 and self.children[idx].type == piece_type:
-            column_matches.append(self.children[idx])
-            idx -= self.__columns
-
-        # Check down
-        idx = index + self.__columns
-        while idx % self.__columns == active_column and idx <= len(self.children) and \
-                self.children[idx].type == piece_type:
-            column_matches.append(self.children[idx])
-            idx += self.__columns
-
-        if len(column_matches) > 1:
-            column_matches.append(piece)
-            return column_matches
-        return []
+            child.reset_tiles()
 
     def swap_children(self, swap1: Piece, swap2: Piece):
-        idx1 = self.children.index(swap1)
-        idx2 = self.children.index(swap2)
+        row1, column1 = self.get_position_of_piece(swap1)
+        row2, column2 = self.get_position_of_piece(swap2)
 
-        self.children[idx1], self.children[idx2] = self.children[idx2], self.children[idx1]
+        self.children[column1].children[row1], self.children[column2].children[row2] = \
+            self.children[column2].children[row2], self.children[column1].children[row1]
         return None
 
-    def get_matches_on_row(self, piece: Piece) -> List[Piece]:
-        index: int = self.children.index(piece)
-        piece_type: PieceType = self.children[index].type
-
+    def get_matches_on_row(self, piece: Piece, row: int, column: int) -> List[Piece]:
+        piece_type: PieceType = piece.type
         row_matches: List[Piece] = []
 
-        active_row = int(index / self.__columns)
-
         # Check left
-        idx = index - 1
-        while idx >= active_row * self.__columns and self.children[idx].type == piece_type:
-            row_matches.append(self.children[idx])
+        idx = column - 1
+        while idx >= 0 and self.children[idx].children[row] == piece_type:
+            row_matches.append(self.children[idx].children[row])
             idx -= 1
 
         # CHeck right
-        idx = index + 1
-        while idx < (active_row + 1) * self.__columns and self.children[idx].type == piece_type:
-            row_matches.append(self.children[idx])
+        idx = column + 1
+        while idx < len(self.children) and self.children[idx].children[row].type == piece_type:
+            row_matches.append(self.children[idx].children[row])
             idx += 1
 
         if len(row_matches) > 1:
@@ -133,5 +53,75 @@ class MatchThreeBoard(GameObject):
             return row_matches
         return []
 
-    def fill_board(self):
-        pass
+    def get_position_of_piece(self, piece: Piece) -> Tuple[int, int]:
+        row, column = -1, -1
+        for child in self.children:
+            if piece in child.children:
+                column = self.children.index(child)
+                row = child.children.index(piece)
+                break
+        return row, column
+
+    def fill_board(self) -> List[Tuple[Piece, Piece]]:
+        new_swaps: List[Tuple[Piece, Piece]] = []
+        for column in range(0, len(self.children)):
+            pass
+            # new_swaps += self.fill_column(column)
+        return new_swaps
+
+    def get_swaps_by_type(self, piece_type: PieceType):
+        new_swaps: List[Tuple[Piece, Piece]] = []
+        for column in range(0, len(self.children)):
+            new_swaps += self.children[column].get_swaps_by_type(piece_type)
+        return new_swaps
+
+    def are_neighbours(self, piece1: Piece, piece2: Piece) -> bool:
+        row1, column1 = self.get_position_of_piece(piece1)
+        row2, column2 = self.get_position_of_piece(piece2)
+
+        if row1 == row2 and column2 == column1:
+            return True
+
+        # Check same row
+        if row1 == row2 and (column1 == column2 - 1 or column1 != column2 + 1):
+            return True
+
+        if column1 == column2 and (row1 == row2 - 1 or row1 == row2 + 1):
+            return True
+        return False
+
+
+def create_board(position: Point, size: Size, columns: int, rows: int, tile_size: Size) -> MatchThreeBoard:
+    if columns < 0:
+        raise AttributeError(f'The number of columns must be positive')
+    if rows < 0:
+        raise AttributeError(f'The number of rows must be positive')
+
+    offset = Point(int((size.width - tile_size.width * columns) / 2),
+                   int((size.height - tile_size.height * rows) / 2))
+    board = MatchThreeBoard(position.to_tuple(), size.to_tuple())
+
+    type_board: List[List[PieceType]] = []
+    for index in range(0, columns):
+        position = Point(index * tile_size.height, 0) + offset
+        column = Column(position, Size(tile_size.width, tile_size.height * rows))
+        for row in range(0, rows):
+            if len(type_board) <= row:
+                type_board.append([])
+            position = Point(0, row * tile_size.width)
+            piece = Piece(position.to_tuple(), tile_size.to_tuple())
+
+            is_match = True
+            new_piece = PieceType.BLACK
+            while is_match:
+                new_piece = PieceType.as_list()[random.randrange(0, 6, 1)]
+                is_match = src.piece.is_column_combination(board=type_board, column=index, row=row, new_piece=new_piece)
+                is_match = is_match or src.piece.is_row_combination(board=type_board, column=index, row=row,
+                                                                    new_piece=new_piece)
+            piece.sprite = GraphicResource(new_piece.value, tile_size)
+            piece.type = new_piece
+            type_board[row].append(new_piece)
+            column.children.append(piece)
+
+        board.children.append(column)
+    return board
