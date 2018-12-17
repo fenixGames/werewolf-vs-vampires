@@ -64,6 +64,18 @@ class GameObject:
         else:
             self.__sprite = Sprite(value[0], value[1])
 
+    def get_children_in_position(self, position: Point, depth: int = -1) -> Union[None, __init__]:
+        if not self.in_position(position):
+            return None
+
+        if depth == 0 or self.children == []:
+            return self
+
+        pos = position - self.position
+        for child in self.children:
+            if child.in_position(pos):
+                return child.get_children_in_position(pos, depth - 1)
+
     def in_position(self, position: Point):
         if position.x < self.position.x:
             return False
