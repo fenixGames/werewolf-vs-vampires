@@ -70,27 +70,28 @@ class MatchThreeBoard(GameObject):
 
         self.__columns: int = columns
         self.__rows: int = rows
-        self.__board: List[List[PieceType]] = []
 
     def init_board(self, tile_width: int, tile_height: int):
         offset = Point(int((self.size.width - tile_width * self.__columns) / 2),
                        int((self.size.height - tile_height * self.__rows) / 2))
+        board: List[List[PieceType]] = []
         for row in range(0, self.__rows):
-            self.__board.append([])
+            board.append([])
             for column in range(0, self.__columns):
-                position = Point(row * tile_height, column * tile_width) + offset
+                position = Point(column * tile_height, row * tile_width) + offset
                 piece = Piece(position.to_tuple(), (tile_width, tile_height))
 
                 is_match = True
                 new_piece = PieceType.BLACK
                 while is_match:
                     new_piece = PieceType.as_list()[random.randrange(0, 6, 1)]
-                    is_match = self.is_column_combination(column=column, row=row, new_piece=new_piece)
-                    is_match = is_match or self.is_row_combination(column=column, row=row, new_piece=new_piece)
+                    is_match = self.is_column_combination(board=board, column=column, row=row, new_piece=new_piece)
+                    is_match = is_match or self.is_row_combination(board=board, column=column, row=row,
+                                                                   new_piece=new_piece)
 
                 piece.sprite = GraphicResource(new_piece.value, Size(tile_width, tile_height))
                 piece.type = new_piece
-                self.__board[row].append(new_piece)
+                board[row].append(new_piece)
                 self.children.append(piece)
 
     def check_matches(self, swap1: Piece, swap2: Piece) -> bool:
@@ -102,17 +103,19 @@ class MatchThreeBoard(GameObject):
         column_matches += self.get_matches_on_column(swap2)
         return True
 
-    def is_column_combination(self, column, new_piece, row):
+    @staticmethod
+    def is_column_combination(board: List[List[PieceType]], column: int, row: int, new_piece: PieceType) -> bool:
         if column < 2:
             return False
-        elif self.__board[row][column - 1] == new_piece and self.__board[row][column - 2] == new_piece:
+        elif board[row][column - 1] == new_piece and board[row][column - 2] == new_piece:
             return True
         return False
 
-    def is_row_combination(self, column: int, row: int, new_piece: Enum) -> bool:
+    @staticmethod
+    def is_row_combination(board: List[List[PieceType]], column: int, row: int, new_piece: Enum) -> bool:
         if row < 2:
             return False
-        elif self.__board[row - 1][column] == new_piece and self.__board[row - 2][column] == new_piece:
+        elif board[row - 1][column] == new_piece and board[row - 2][column] == new_piece:
             return True
         return False
 
