@@ -22,6 +22,9 @@ class Point:
             return False
         return True
 
+    def __repr__(self):
+        return f'({self.x}, {self.y})'
+
 
 class Size:
     def __init__(self, width: int, height: int):
