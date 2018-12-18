@@ -41,7 +41,7 @@ class MatchThreeBoard(GameObject):
 
         # Check left
         idx = column - 1
-        while idx >= 0 and self.children[idx].children[row] == piece_type:
+        while idx >= 0 and self.children[idx].children[row].type == piece_type:
             row_matches.append(self.children[idx].children[row])
             idx -= 1
 
