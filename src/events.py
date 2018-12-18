@@ -1,4 +1,4 @@
-from typing import List, Callable
+from typing import List, Callable, Dict
 
 import pygame
 
@@ -8,7 +8,7 @@ from lib.movement import MovementAnimation
 from lib.vector import Point
 from src.board import MatchThreeBoard
 from src.match_animation import MatchAnimation
-from src.piece import Piece, PieceType
+from src.piece import Piece
 
 
 def animate_swap(piece1: Piece,
@@ -48,11 +48,8 @@ def get_all_matches_on_board(board: MatchThreeBoard) -> List[Piece]:
     return list_of_pieces
 
 
-def animate_drop(piece: Piece, draw_function: Callable[[], None]) -> MovementAnimation:
-    final_position = Point(piece.position.x, piece.position.y)
-
-    final_position.y += piece.size.height
-    return MovementAnimation(draw_function, piece, movement.linear_movement, final_position)
+def animate_drop(piece: Piece, final_point: Point, draw_function: Callable[[], None]) -> MovementAnimation:
+    return MovementAnimation(draw_function, piece, movement.linear_movement, final_point)
 
 
 class MouseButtonDownEvent(Event):
@@ -99,13 +96,11 @@ class MouseButtonDownEvent(Event):
                 # if True:
                 self.handle_matches(matches, board)
 
-                swapped_pieces = board.get_dropping_squares(PieceType.EMPTY)
-                new_pieces = board.fill_board()
+                dropping_pieces = board.get_dropping_squares()
                 # if True:
-                while swapped_pieces or new_pieces:
-                    self.drop_squares_on_board(swapped_pieces)
-                    swapped_pieces = board.get_dropping_squares(PieceType.EMPTY)
-                    new_pieces = board.fill_board()
+                while dropping_pieces:
+                    self.drop_squares_on_board(dropping_pieces)
+                    dropping_pieces = board.get_dropping_squares()
                 matches = get_all_matches_on_board(board)
 
             self.__previous = Point(0, 0)
@@ -124,10 +119,10 @@ class MouseButtonDownEvent(Event):
         for animation in animations:
             animation.join()
 
-    def drop_squares_on_board(self, dropping_pieces: List[Piece]):
+    def drop_squares_on_board(self, dropping_pieces: Dict[Piece, Point]):
         animations: List[MovementAnimation] = []
-        for piece in dropping_pieces:
-            animations.append(animate_drop(piece, self.draw_function))
+        for piece, point in dropping_pieces.items():
+            animations.append(animate_drop(piece, point, self.draw_function))
             animations[-1].start()
 
         for animation in animations:

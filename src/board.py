@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import Tuple, List, Dict
 
 import src
 from lib.game_object import GameObject
@@ -67,16 +67,10 @@ class MatchThreeBoard(GameObject):
                 break
         return row, column
 
-    def fill_board(self) -> List[Piece]:
-        new_swaps: List[Piece] = []
-        for column in self.children:
-            new_swaps += column.fill_column()
-        return new_swaps
-
-    def get_dropping_squares(self, piece_type: PieceType) -> List[Piece]:
-        new_swaps: List[Piece] = []
+    def get_dropping_squares(self) -> Dict[Piece, Point]:
+        new_swaps: Dict[Piece, Point] = {}
         for column in range(0, len(self.children)):
-            new_swaps += self.children[column].get_dropping_squares(piece_type)
+            new_swaps.update(self.children[column].get_dropping_squares())
         return new_swaps
 
     def are_neighbours(self, piece1: Piece, piece2: Piece) -> bool:

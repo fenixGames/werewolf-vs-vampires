@@ -5,6 +5,7 @@ from typing import Tuple, List
 
 from lib.game_object import GameObject
 from lib.graphics import GraphicResource
+from lib.vector import Size
 
 
 class PieceType(Enum):
@@ -45,10 +46,14 @@ def is_row_combination(board: List[List[PieceType]], column: int, row: int, new_
 
 
 class Piece(GameObject):
+    PIECE_SIZE: Size = Size(0, 0)
+
     def __init__(self, position: Tuple[int, int], size: Tuple[int, int]):
         super().__init__(position, size)
         self.__selected: bool = False
         self.__type: PieceType = None
+        self.PIECE_SIZE.width = size[0]
+        self.PIECE_SIZE.height = size[1]
 
     @property
     def selected(self) -> bool:
