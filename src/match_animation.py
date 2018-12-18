@@ -13,7 +13,7 @@ class MatchAnimation(Animation):
     def run(self):
         self.__piece.selected = True
         self.draw_screen()
-        time.sleep(0.2)
+        time.sleep(0.05)
         self.__piece.selected = False
         self.__piece.type = PieceType.EMPTY
         self.draw_screen()
