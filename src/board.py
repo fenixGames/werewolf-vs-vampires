@@ -67,11 +67,10 @@ class MatchThreeBoard(GameObject):
                 break
         return row, column
 
-    def fill_board(self) -> List[Tuple[Piece, Piece]]:
-        new_swaps: List[Tuple[Piece, Piece]] = []
-        for column in range(0, len(self.children)):
-            pass
-            # new_swaps += self.fill_column(column)
+    def fill_board(self) -> List[Piece]:
+        new_swaps: List[Piece] = []
+        for column in self.children:
+            new_swaps += column.fill_column()
         return new_swaps
 
     def get_swaps_by_type(self, piece_type: PieceType):

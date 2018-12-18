@@ -1,5 +1,4 @@
-import time
-from typing import Tuple, List, Callable
+from typing import List, Callable, Tuple
 
 import pygame
 
@@ -8,6 +7,7 @@ from lib.events import Event
 from lib.movement import MovementAnimation
 from lib.vector import Point
 from src.board import MatchThreeBoard
+from src.match_animation import MatchAnimation
 from src.piece import Piece, PieceType
 
 
@@ -40,6 +40,14 @@ def animate_swap(piece1: Piece,
     return animations
 
 
+def get_all_matches_on_board(board: MatchThreeBoard) -> List[Piece]:
+    list_of_pieces: List[Piece] = []
+    for column in board.children:
+        for piece in column.children:
+            list_of_pieces += board.get_match_list(piece)
+    return list_of_pieces
+
+
 class MouseButtonDownEvent(Event):
     def __init__(self, board: MatchThreeBoard, offset: Point):
         super().__init__(pygame.MOUSEBUTTONDOWN, (board, offset))
@@ -64,8 +72,10 @@ class MouseButtonDownEvent(Event):
         if not board.are_neighbours(prev_square, current_square):
             board.reset_tiles()
             current_square.selected = True
+            self.__previous = position
         elif prev_square is not None and current_square is not None and prev_square == current_square:
             current_square.selected = not current_square.selected
+            self.__previous = position
         elif prev_square is not None and prev_square.selected:
             if self.draw_function is not None:
                 animations += animate_swap(prev_square, current_square, self.draw_function, board)
@@ -76,36 +86,43 @@ class MouseButtonDownEvent(Event):
             animations.clear()
             board.swap_children(prev_square, current_square)
             board.reset_tiles()
-            self.handle_matches((prev_square, current_square), board)
-        self.__previous = position
 
-    def handle_matches(self, pieces: Tuple[Piece, Piece], board: MatchThreeBoard):
+            matches = [prev_square, current_square]
+            while matches:
+                self.handle_matches(matches, board)
+
+                swapped_pieces = board.get_swaps_by_type(PieceType.EMPTY)
+                new_pieces = board.fill_board()
+                while swapped_pieces or new_pieces:
+                    self.swap_pieces_in_board(board, swapped_pieces)
+                    swapped_pieces = board.get_swaps_by_type(PieceType.EMPTY)
+                    new_pieces = board.fill_board()
+                matches = get_all_matches_on_board(board)
+
+            self.__previous = Point(0, 0)
+
+    def handle_matches(self, pieces: List[Piece], board: MatchThreeBoard):
+        animations: List[MatchAnimation] = []
         for piece in pieces:
             matches = board.get_match_list(piece)
 
             for match in matches:
-                match.selected = True
-            self.draw_function()
+                if match is not None:
+                    animation = MatchAnimation(self.draw_function, match)
+                    animation.start()
 
-            time.sleep(0.2)
-            for match in matches:
-                match.type = PieceType.EMPTY
-                match.selected = False
-            self.draw_function()
+                    animations.append(animation)
+        for animation in animations:
+            animation.join()
 
-            swapped_pieces = board.get_swaps_by_type(PieceType.EMPTY)
-            animations: List[MovementAnimation] = []
-            while swapped_pieces:
-                for piece1, piece2 in swapped_pieces:
-                    animations += animate_swap(piece1, piece2, self.draw_function, board)
+    def swap_pieces_in_board(self, board: MatchThreeBoard, swapped_pieces: List[Tuple[Piece, Piece]]):
+        animations: List[MovementAnimation] = []
+        for piece1, piece2 in swapped_pieces:
+            animations += animate_swap(piece1, piece2, self.draw_function, board)
 
-                for animation in animations:
-                    animation.join()
-                animations.clear()
+        for animation in animations:
+            animation.join()
+        animations.clear()
 
-                for piece1, piece2 in swapped_pieces:
-                    board.swap_children(piece1, piece2)
-                swapped_pieces = board.get_swaps_by_type(PieceType.EMPTY)
-
-            # for piece1, piece2 in swapped_pieces:
-            #     self.handle_matches((piece1, piece2))
+        for piece1, piece2 in swapped_pieces:
+            board.swap_children(piece1, piece2)

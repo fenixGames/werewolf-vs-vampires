@@ -44,3 +44,10 @@ class Column(GameObject):
             matches.append(piece)
             return matches
         return []
+
+    def fill_column(self) -> List[Piece]:
+        if self.children[0].type == PieceType.EMPTY:
+            self.children[0].type = PieceType.get_random_piece()
+            return [self.children[0]]
+
+        return []
