@@ -31,6 +31,8 @@ def animate_swap(piece1: Piece,
         final_position1.x -= piece1.size.width
         final_position2.x += piece1.size.width
         step_point = Point(Piece.PIECE_SIZE.width / 10, 0)
+    elif row1 < row2:
+        step_point = Point(0, - Piece.PIECE_SIZE.height / 10)
     else:
         step_point = Point(0, Piece.PIECE_SIZE.height / 10)
 
