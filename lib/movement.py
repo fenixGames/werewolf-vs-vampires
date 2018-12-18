@@ -12,14 +12,12 @@ def linear_movement(initial_point: Point, step: Point) -> Point:
 
 class MovementAnimation(Animation):
     def __init__(self, draw_function: Callable[[], None], game_object: GameObject,
-                 movement_function: Callable[[Point, Point], Point], final_point: Point):
+                 movement_function: Callable[[Point, Point], Point], final_point: Point, step_point: Point):
         super().__init__(draw_function)
         self.__movement_function: Callable[[Point, Point], Point] = movement_function
         self.__object: GameObject = game_object
         self.__final_point: Point = final_point
-        self.__step_point = (final_point - game_object.position)
-        self.__step_point.x /= 10
-        self.__step_point.y /= 10
+        self.__step_point: Point = step_point
 
     def run(self):
         while self.__object.position != self.__final_point:

@@ -2,11 +2,11 @@ from typing import Tuple
 
 
 class Point:
-    def __init__(self, x: int, y: int):
-        self.x: int = x
-        self.y: int = y
+    def __init__(self, x: float, y: float):
+        self.x: float = x
+        self.y: float = y
 
-    def to_tuple(self) -> Tuple[int, int]:
+    def to_tuple(self) -> Tuple[float, float]:
         return self.x, self.y
 
     def __add__(self, other):

@@ -26,12 +26,17 @@ def animate_swap(piece1: Piece,
     if column1 < column2:
         final_position1.x += piece1.size.width
         final_position2.x -= piece1.size.width
+        step_point = Point(- Piece.PIECE_SIZE.width / 10, 0)
     elif column1 > column2:
         final_position1.x -= piece1.size.width
         final_position2.x += piece1.size.width
+        step_point = Point(Piece.PIECE_SIZE.width / 10, 0)
+    else:
+        step_point = Point(0, Piece.PIECE_SIZE.height / 10)
 
-    animation1 = MovementAnimation(draw_function, piece1, movement.linear_movement, final_position1)
-    animation2 = MovementAnimation(draw_function, piece2, movement.linear_movement, final_position2)
+    animation2 = MovementAnimation(draw_function, piece2, movement.linear_movement, final_position2, step_point)
+    animation1 = MovementAnimation(draw_function, piece1, movement.linear_movement, final_position1,
+                                   Point(0, 0) - step_point)
 
     animation1.start()
     animation2.start()
@@ -50,7 +55,8 @@ def get_all_matches_on_board(board: MatchThreeBoard) -> List[Piece]:
 
 
 def animate_drop(piece: Piece, final_point: Point, draw_function: Callable[[], None]) -> MovementAnimation:
-    return MovementAnimation(draw_function, piece, movement.linear_movement, final_point)
+    step_point = Point(0, Piece.PIECE_SIZE.height / 10)
+    return MovementAnimation(draw_function, piece, movement.linear_movement, final_point, step_point)
 
 
 class MouseButtonDownEvent(Event):
