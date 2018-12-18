@@ -82,7 +82,7 @@ class MatchThreeBoard(GameObject):
             return True
 
         # Check same row
-        if row1 == row2 and (column1 == column2 - 1 or column1 != column2 + 1):
+        if row1 == row2 and (column1 == column2 - 1 or column1 == column2 + 1):
             return True
 
         if column1 == column2 and (row1 == row2 - 1 or row1 == row2 + 1):
