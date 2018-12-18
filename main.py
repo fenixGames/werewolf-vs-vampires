@@ -18,7 +18,7 @@ board_decorator.sprite = graphics.GraphicResource(pathlib.Path('resources/board_
 
 board = board.create_board(position=vector.Point(75, 75),
                            size=vector.Size(WIN_WIDTH - 150, WIN_HEIGHT - 450),
-                           columns=4, rows=5,
+                           columns=10, rows=10,
                            tile_size=vector.Size(55, 55))
 # board.color = (0, 255, 255)
 
