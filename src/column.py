@@ -86,13 +86,6 @@ class Column(GameObject):
             return matches
         return []
 
-    def fill_column(self) -> List[Piece]:
-        if not self.__needs_filling:
-            return []
-
-        for index in range(0, column_length):
-            self._new_piece()
-
     @staticmethod
     def _new_piece() -> Piece:
         piece = Piece((0, 0), Piece.PIECE_SIZE.to_tuple())
