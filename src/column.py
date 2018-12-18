@@ -14,8 +14,8 @@ class Column(GameObject):
         for child in self.children:
             child.selected = False
 
-    def _get_first_occupied_square(self) -> Union[Piece, None]:
-        idx = len(self.children) - 1
+    def _get_first_occupied_square(self, start: int) -> Union[Piece, None]:
+        idx = start
         while idx >= 0:
             child: Piece = self.children[idx]
             if child.type != PieceType.EMPTY:
@@ -35,31 +35,26 @@ class Column(GameObject):
     def get_dropping_squares(self) -> Dict[Piece, Point]:
         dropping_pieces: Dict[Piece, Point] = {}
 
-        occupied = self._get_first_occupied_square()
         empty = self._get_first_unoccupied_square()
-
         if empty is None:
             return {}
+        index_empty = self.children.index(empty)
+        occupied = self._get_first_occupied_square(index_empty)
         if occupied is None:
-            self.fill_column(len(self.children))
-            new_items: int = len(self.children)
+            self.fill_column(index_empty + 1)
+            new_items: int = index_empty + 1
         else:
             index_occupied = self.children.index(occupied)
-            index_empty = self.children.index(empty)
 
-            if index_occupied > index_empty:
-                self.fill_column(index_empty + 1)
-                new_items = index_empty + 1
-            else:
-                point = Point(empty.position.x, empty.position.y)
-                delta_point = Point(0, Piece.PIECE_SIZE.height)
-                idx = index_occupied
-                while idx >= 0:
-                    dropping_pieces[self.children[idx]] = point
-                    point = point - delta_point
-                    idx -= 1
-                self.fill_column(index_empty + 1, index_occupied + 1)
-                new_items = index_empty - index_occupied + 1
+            point = Point(empty.position.x, empty.position.y)
+            delta_point = Point(0, Piece.PIECE_SIZE.height)
+            idx = index_occupied
+            while idx >= 0:
+                dropping_pieces[self.children[idx]] = point
+                point = point - delta_point
+                idx -= 1
+            self.fill_column(index_empty + 1, index_occupied + 1)
+            new_items = index_empty - index_occupied + 1
         for idx in range(0, new_items):
             piece = self.children[idx]
             dropping_pieces[piece] = Point(0, idx * Piece.PIECE_SIZE.height)
