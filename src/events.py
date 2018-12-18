@@ -76,13 +76,10 @@ class MouseButtonDownEvent(Event):
             animations.clear()
             board.swap_children(prev_square, current_square)
             board.reset_tiles()
-            # self.handle_matches((prev_square, current_square))
+            self.handle_matches((prev_square, current_square), board)
         self.__previous = position
 
-    def handle_matches(self, pieces: Tuple[Piece, Piece]):
-        board: MatchThreeBoard = None
-        board, _ = self.args
-
+    def handle_matches(self, pieces: Tuple[Piece, Piece], board: MatchThreeBoard):
         for piece in pieces:
             matches = board.get_match_list(piece)
 
@@ -97,9 +94,16 @@ class MouseButtonDownEvent(Event):
             self.draw_function()
 
             swapped_pieces = board.get_swaps_by_type(PieceType.EMPTY)
+            animations: List[MovementAnimation] = []
             while swapped_pieces:
                 for piece1, piece2 in swapped_pieces:
-                    exchange_squares(piece1, piece2, self.draw_function)
+                    animations += animate_swap(piece1, piece2, self.draw_function, board)
+
+                for animation in animations:
+                    animation.join()
+                animations.clear()
+
+                for piece1, piece2 in swapped_pieces:
                     board.swap_children(piece1, piece2)
                 swapped_pieces = board.get_swaps_by_type(PieceType.EMPTY)
 
