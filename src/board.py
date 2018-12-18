@@ -29,6 +29,10 @@ class MatchThreeBoard(GameObject):
 
         self.children[column1].children[row1], self.children[column2].children[row2] = \
             self.children[column2].children[row2], self.children[column1].children[row1]
+
+        if column1 != column2:
+            self.children[column1].children[row1].position.x = 0
+            self.children[column2].children[row2].position.x = 0
         return None
 
     def get_matches_on_row(self, piece: Piece, row: int, column: int) -> List[Piece]:
