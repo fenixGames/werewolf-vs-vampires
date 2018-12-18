@@ -73,10 +73,10 @@ class MatchThreeBoard(GameObject):
             new_swaps += column.fill_column()
         return new_swaps
 
-    def get_swaps_by_type(self, piece_type: PieceType):
-        new_swaps: List[Tuple[Piece, Piece]] = []
+    def get_dropping_squares(self, piece_type: PieceType) -> List[Piece]:
+        new_swaps: List[Piece] = []
         for column in range(0, len(self.children)):
-            new_swaps += self.children[column].get_swaps_by_type(piece_type)
+            new_swaps += self.children[column].get_dropping_squares(piece_type)
         return new_swaps
 
     def are_neighbours(self, piece1: Piece, piece2: Piece) -> bool:

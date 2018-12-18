@@ -1,4 +1,4 @@
-from typing import List, Callable, Tuple
+from typing import List, Callable
 
 import pygame
 
@@ -48,6 +48,13 @@ def get_all_matches_on_board(board: MatchThreeBoard) -> List[Piece]:
     return list_of_pieces
 
 
+def animate_drop(piece: Piece, draw_function: Callable[[], None]) -> MovementAnimation:
+    final_position = Point(piece.position.x, piece.position.y)
+
+    final_position.y += piece.size.height
+    return MovementAnimation(draw_function, piece, movement.linear_movement, final_position)
+
+
 class MouseButtonDownEvent(Event):
     def __init__(self, board: MatchThreeBoard, offset: Point):
         super().__init__(pygame.MOUSEBUTTONDOWN, (board, offset))
@@ -89,13 +96,15 @@ class MouseButtonDownEvent(Event):
 
             matches = [prev_square, current_square]
             while matches:
+                # if True:
                 self.handle_matches(matches, board)
 
-                swapped_pieces = board.get_swaps_by_type(PieceType.EMPTY)
+                swapped_pieces = board.get_dropping_squares(PieceType.EMPTY)
                 new_pieces = board.fill_board()
+                # if True:
                 while swapped_pieces or new_pieces:
-                    self.swap_pieces_in_board(board, swapped_pieces)
-                    swapped_pieces = board.get_swaps_by_type(PieceType.EMPTY)
+                    self.drop_squares_on_board(swapped_pieces)
+                    swapped_pieces = board.get_dropping_squares(PieceType.EMPTY)
                     new_pieces = board.fill_board()
                 matches = get_all_matches_on_board(board)
 
@@ -115,14 +124,12 @@ class MouseButtonDownEvent(Event):
         for animation in animations:
             animation.join()
 
-    def swap_pieces_in_board(self, board: MatchThreeBoard, swapped_pieces: List[Tuple[Piece, Piece]]):
+    def drop_squares_on_board(self, dropping_pieces: List[Piece]):
         animations: List[MovementAnimation] = []
-        for piece1, piece2 in swapped_pieces:
-            animations += animate_swap(piece1, piece2, self.draw_function, board)
+        for piece in dropping_pieces:
+            animations.append(animate_drop(piece, self.draw_function))
+            animations[-1].start()
 
         for animation in animations:
             animation.join()
         animations.clear()
-
-        for piece1, piece2 in swapped_pieces:
-            board.swap_children(piece1, piece2)

@@ -23,6 +23,7 @@ class MovementAnimation(Animation):
 
     def run(self):
         while self.__object.position != self.__final_point:
+            print(f'{self.__object.position} -> {self.__final_point}')
             self.__object.position = self.__movement_function(self.__object.position, self.__step_point)
             self.draw_screen()
             time.sleep(0.001)

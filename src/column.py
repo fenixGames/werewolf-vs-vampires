@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List
 
 from lib.game_object import GameObject
 from lib.vector import Point, Size
@@ -8,22 +8,28 @@ from src.piece import PieceType, Piece
 class Column(GameObject):
     def __init__(self, position: Point, size: Size):
         super().__init__(position.to_tuple(), size.to_tuple())
+        self.__needs_filling: bool = False
 
     def reset_tiles(self):
         for child in self.children:
             child.selected = False
 
-    def get_swaps_by_type(self, piece_type: PieceType):
+    def get_dropping_squares(self, piece_type: PieceType) -> List[Piece]:
         index = len(self.children) - 1
-        swapped_pieces: List[Tuple[Piece, Piece]] = []
-        while index > 0:
+        swapped_pieces: List[Piece] = []
+        while index >= 0:
             piece = self.children[index]
-            piece_above = self.children[index - 1]
 
-            if piece.type == piece_type and piece_above.type != piece_type:
-                swapped_pieces.append((piece, piece_above))
+            if piece.type == piece_type:
+                self.children.remove(piece)
+                self.__needs_filling = True
+                idx = index - 1
+                while idx >= 0:
+                    swapped_pieces.append(self.children[idx])
+                    idx -= 1
+                return swapped_pieces
             index -= 1
-        return swapped_pieces
+        return []
 
     def get_matches(self, piece: Piece, row: int) -> List[Piece]:
         matches: List[Piece] = []
@@ -46,8 +52,13 @@ class Column(GameObject):
         return []
 
     def fill_column(self) -> List[Piece]:
-        if self.children[0].type == PieceType.EMPTY:
-            self.children[0].type = PieceType.get_random_piece()
-            return [self.children[0]]
+        if not self.__needs_filling:
+            return []
 
-        return []
+        self.__needs_filling = False
+        piece = Piece((0, 0), self.children[0].size.to_tuple())
+        piece.type = PieceType.get_random_piece()
+
+        self.children.insert(0, piece)
+
+        return [piece]
