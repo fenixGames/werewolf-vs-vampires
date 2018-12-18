@@ -13,6 +13,8 @@ class MatchThreeBoard(GameObject):
         super().__init__(position, size)
 
     def get_match_list(self, piece: Piece) -> List[Piece]:
+        if piece.type == PieceType.EMPTY:
+            return []
         row, column = self.get_position_of_piece(piece)
         column_matches = self.children[column].get_matches(piece=piece, row=row)
         row_matches = self.get_matches_on_row(piece=piece, row=row, column=column)
