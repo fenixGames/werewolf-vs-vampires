@@ -1,25 +1,43 @@
 import time
-from typing import Callable, Tuple
+from typing import Tuple, List, Callable
 
 import pygame
 
+from lib import movement
 from lib.events import Event
+from lib.movement import MovementAnimation
 from lib.vector import Point
 from src.board import MatchThreeBoard
 from src.piece import Piece, PieceType
 
 
-def exchange_squares(chosen_square: Piece, selected_square: Piece, draw_function: Callable):
-    delta_point: Point = chosen_square.position - selected_square.position
-    delta_point.x /= 10
-    delta_point.y /= 10
+def animate_swap(piece1: Piece,
+                 piece2: Piece,
+                 draw_function: Callable[[], None],
+                 board: MatchThreeBoard) -> List[MovementAnimation]:
+    animations: List[MovementAnimation] = []
 
-    final_position = selected_square.position
-    while chosen_square.position != final_position:
-        chosen_square.position -= delta_point
-        selected_square.position += delta_point
+    row1, column1 = board.get_position_of_piece(piece1)
+    row2, column2 = board.get_position_of_piece(piece2)
 
-        draw_function()
+    final_position1 = Point(piece2.position.x, piece2.position.y)
+    final_position2 = Point(piece1.position.x, piece1.position.y)
+    if column1 < column2:
+        final_position1.x += piece1.size.width
+        final_position2.x -= piece1.size.width
+    elif column1 > column2:
+        final_position1.x -= piece1.size.width
+        final_position2.x += piece1.size.width
+
+    animation1 = MovementAnimation(draw_function, piece1, movement.linear_movement, final_position1)
+    animation2 = MovementAnimation(draw_function, piece2, movement.linear_movement, final_position2)
+
+    animation1.start()
+    animation2.start()
+
+    animations.append(animation1)
+    animations.append(animation2)
+    return animations
 
 
 class MouseButtonDownEvent(Event):
@@ -30,6 +48,8 @@ class MouseButtonDownEvent(Event):
     def handle(self, event: pygame.event.Event):
         board: MatchThreeBoard = None
         offset: int = -1
+
+        animations: List[MovementAnimation] = []
         if event.button != 1:
             return
         board, offset = self.args
@@ -48,12 +68,15 @@ class MouseButtonDownEvent(Event):
             current_square.selected = not current_square.selected
         elif prev_square is not None and prev_square.selected:
             if self.draw_function is not None:
-                exchange_squares(prev_square, current_square, self.draw_function)
+                animations += animate_swap(prev_square, current_square, self.draw_function, board)
 
-                board.swap_children(prev_square, current_square)
+            for animation in animations:
+                animation.join()
+
+            animations.clear()
+            board.swap_children(prev_square, current_square)
             board.reset_tiles()
-            self.handle_matches((prev_square, current_square))
-            pass
+            # self.handle_matches((prev_square, current_square))
         self.__previous = position
 
     def handle_matches(self, pieces: Tuple[Piece, Piece]):
