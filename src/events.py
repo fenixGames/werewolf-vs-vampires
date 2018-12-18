@@ -1,3 +1,4 @@
+import time
 from typing import List, Callable, Dict
 
 import pygame
@@ -102,6 +103,7 @@ class MouseButtonDownEvent(Event):
                     self.drop_squares_on_board(dropping_pieces)
                     dropping_pieces = board.get_dropping_squares()
                 matches = get_all_matches_on_board(board)
+                time.sleep(0.05)
 
             self.__previous = Point(0, 0)
 
