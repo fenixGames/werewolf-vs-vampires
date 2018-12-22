@@ -56,9 +56,10 @@ def get_all_matches_on_board(board: MatchThreeBoard) -> List[Piece]:
     return list_of_pieces
 
 
-def animate_drop(piece: Piece, final_point: Point, draw_function: Callable[[], None]) -> MovementAnimation:
+def animate_drop(piece: Piece, final_point: Point,
+                 draw_function: Callable[[], None], delay: int = 0) -> MovementAnimation:
     step_point = Point(0, Piece.PIECE_SIZE.height / 10)
-    return MovementAnimation(draw_function, piece, movement.linear_movement, final_point, step_point)
+    return MovementAnimation(draw_function, piece, movement.linear_movement, final_point, step_point, delay)
 
 
 class MouseButtonDownEvent(Event):
@@ -131,8 +132,10 @@ class MouseButtonDownEvent(Event):
 
     def drop_squares_on_board(self, dropping_pieces: Dict[Piece, Point]):
         animations: List[MovementAnimation] = []
+        turns = len(dropping_pieces)
         for piece, point in dropping_pieces.items():
-            animations.append(animate_drop(piece, point, self.draw_function))
+            delay = turns - int(point.y / Piece.PIECE_SIZE.height) - 1
+            animations.append(animate_drop(piece, point, self.draw_function, delay * 10))
             animations[-1].start()
 
         for animation in animations:
