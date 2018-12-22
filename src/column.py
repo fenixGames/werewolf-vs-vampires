@@ -83,7 +83,7 @@ class Column(GameObject):
 
     @staticmethod
     def _new_piece() -> Piece:
-        piece = Piece((0, 0), Piece.PIECE_SIZE.to_tuple())
+        piece = Piece((0, - Piece.PIECE_SIZE.height), Piece.PIECE_SIZE.to_tuple())
         piece.type = PieceType.get_random_piece()
         return piece
 
