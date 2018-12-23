@@ -1,4 +1,3 @@
-import time
 from typing import List, Callable, Dict
 
 import pygame
@@ -107,12 +106,9 @@ class MouseButtonDownEvent(Event):
                 self.handle_matches(matches, board)
 
                 dropping_pieces = board.get_dropping_squares()
-                # if True:
-                while dropping_pieces:
-                    self.drop_squares_on_board(dropping_pieces)
-                    dropping_pieces = board.get_dropping_squares()
+                self.drop_squares_on_board(dropping_pieces)
                 matches = get_all_matches_on_board(board)
-                time.sleep(0.05)
+                # time.sleep(0.05)
 
             self.__previous = Point(0, 0)
 
@@ -130,13 +126,14 @@ class MouseButtonDownEvent(Event):
         for animation in animations:
             animation.join()
 
-    def drop_squares_on_board(self, dropping_pieces: Dict[Piece, Point]):
+    def drop_squares_on_board(self, dropping_pieces: List[Dict[Piece, Point]]):
         animations: List[MovementAnimation] = []
-        turns = len(dropping_pieces)
-        for piece, point in dropping_pieces.items():
-            delay = turns - int(point.y / Piece.PIECE_SIZE.height) - 1
-            animations.append(animate_drop(piece, point, self.draw_function, delay * 10))
-            animations[-1].start()
+        for column in dropping_pieces:
+            turns = len(column)
+            for piece, point in column.items():
+                delay = turns - int(point.y / Piece.PIECE_SIZE.height) - 1
+                animations.append(animate_drop(piece, point, self.draw_function, delay * 10))
+                animations[-1].start()
 
         for animation in animations:
             animation.join()

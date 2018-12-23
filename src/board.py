@@ -67,10 +67,10 @@ class MatchThreeBoard(GameObject):
                 break
         return row, column
 
-    def get_dropping_squares(self) -> Dict[Piece, Point]:
-        new_swaps: Dict[Piece, Point] = {}
+    def get_dropping_squares(self) -> List[Dict[Piece, Point]]:
+        new_swaps: List[Dict[Piece, Point]] = []
         for column in range(0, len(self.children)):
-            new_swaps.update(self.children[column].get_dropping_squares())
+            new_swaps.append(self.children[column].get_dropping_squares())
         return new_swaps
 
     def are_neighbours(self, piece1: Piece, piece2: Piece) -> bool:
