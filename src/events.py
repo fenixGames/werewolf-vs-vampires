@@ -61,6 +61,16 @@ def animate_drop(piece: Piece, final_point: Point,
     return MovementAnimation(draw_function, piece, movement.linear_movement, final_point, step_point, delay)
 
 
+def are_there_dropping_pieces(board: MatchThreeBoard, dropping_pieces: List[Dict[Piece, Point]]) -> bool:
+    is_there_pieces = False
+
+    dropping_pieces += board.get_dropping_squares()
+    for item in dropping_pieces:
+        if item != {}:
+            is_there_pieces = True
+    return is_there_pieces
+
+
 class MouseButtonDownEvent(Event):
     def __init__(self, board: MatchThreeBoard, offset: Point):
         super().__init__(pygame.MOUSEBUTTONDOWN, (board, offset))
@@ -105,8 +115,10 @@ class MouseButtonDownEvent(Event):
                 # if True:
                 self.handle_matches(matches, board)
 
-                dropping_pieces = board.get_dropping_squares()
-                self.drop_squares_on_board(dropping_pieces)
+                dropping_pieces = []
+                while are_there_dropping_pieces(board, dropping_pieces):
+                    self.drop_squares_on_board(dropping_pieces)
+                    dropping_pieces.clear()
                 matches = get_all_matches_on_board(board)
                 # time.sleep(0.05)
 
